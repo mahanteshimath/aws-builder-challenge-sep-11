@@ -40,6 +40,11 @@ export default function Home() {
         {loadingDemo ? 'Loading demo…' : '🎲 Try with Mock Data'}
       </button>
       {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+
+      <p className="mt-8 max-w-xs text-xs text-slate-400">
+        No sign-up. Every group gets its own private, unguessable link —
+        nobody else can see or find it.
+      </p>
     </div>
   );
 }
