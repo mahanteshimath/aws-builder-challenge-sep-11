@@ -55,7 +55,7 @@ React + Vite + Tailwind CSS
 - **Amazon DynamoDB** uses on-demand capacity and a single-table layout. A group uses `GROUP#<groupId>` as its partition key; `METADATA` stores the group and `EXPENSE#<expenseId>` stores each expense.
 - **Amazon Bedrock** powers the optional “Generate a fun recap” action through the Converse API and Amazon Nova Lite. The model receives the group context and settlement result, but it never controls or changes the financial calculation.
 
-The infrastructure is defined in AWS SAM. Because the SAM CLI was not installed locally, I used `aws cloudformation package` followed by `aws cloudformation deploy`. The standard AWS CLI handled the packaging and CloudFormation deployment without requiring an additional local toolchain.
+The infrastructure is defined in AWS SAM. I deployed it with the standard AWS CLI using `aws cloudformation package` followed by `aws cloudformation deploy`, keeping the infrastructure workflow reproducible with the same CloudFormation commands available in a minimal AWS environment.
 
 ## Deployment and Verification
 
