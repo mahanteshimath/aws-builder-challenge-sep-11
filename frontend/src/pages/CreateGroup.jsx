@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createGroup } from '../lib/api';
 
 export default function CreateGroup() {
@@ -31,23 +31,25 @@ export default function CreateGroup() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-10">
+    <main className="min-h-[100dvh] px-6 py-10 text-[#17352f]">
       <form onSubmit={handleSubmit} className="mx-auto max-w-sm space-y-6">
-        <h1 className="text-2xl font-bold text-slate-900">Create Group</h1>
+        <Link to="/" className="text-sm font-semibold text-[#668078] hover:text-[#dd783a]">← QuickSplit</Link>
+        <h1 className="pt-4 text-3xl font-bold tracking-[-0.06em]">Create a split</h1>
+        <p className="-mt-3 text-sm leading-6 text-[#668078]">Give the group a name, add everyone, and let the math take it from there.</p>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700">Group Name</label>
+          <label className="block text-sm font-semibold text-[#31564d]">Group name</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Goa Trip"
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            className="mt-2 w-full rounded-xl border border-[#cbd8c9] bg-[#f8f8ef] px-3 py-3 text-[#17352f] placeholder:text-[#9aaa9e] focus:border-[#dd783a] focus:ring-2 focus:ring-[#dd783a]/20"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700">People</label>
+          <label className="block text-sm font-semibold text-[#31564d]">People</label>
           <div className="mt-1 space-y-2">
             {people.map((person, i) => (
               <div key={i} className="flex gap-2">
@@ -55,13 +57,13 @@ export default function CreateGroup() {
                   value={person}
                   onChange={(e) => updatePerson(i, e.target.value)}
                   placeholder={`Person ${i + 1}`}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2"
+                  className="w-full rounded-xl border border-[#cbd8c9] bg-[#f8f8ef] px-3 py-3 text-[#17352f] placeholder:text-[#9aaa9e] focus:border-[#dd783a] focus:ring-2 focus:ring-[#dd783a]/20"
                 />
                 {people.length > 2 && (
                   <button
                     type="button"
                     onClick={() => removePerson(i)}
-                    className="px-2 text-slate-400 hover:text-red-500"
+                    className="rounded-lg px-2 text-[#9aaa9e] hover:bg-[#fff0e5] hover:text-[#b64735]"
                   >
                     ✕
                   </button>
@@ -72,7 +74,7 @@ export default function CreateGroup() {
           <button
             type="button"
             onClick={addPerson}
-            className="mt-2 text-sm font-medium text-emerald-700"
+            className="mt-2 text-sm font-semibold text-[#dd783a] hover:text-[#b85e2c]"
           >
             + Add person
           </button>
@@ -83,11 +85,11 @@ export default function CreateGroup() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-lg bg-emerald-600 py-3 font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="w-full rounded-xl bg-[#17352f] py-3.5 font-semibold text-[#f8f8ef] shadow-[0_12px_24px_rgba(23,53,47,0.14)] hover:bg-[#214d43] disabled:opacity-50"
         >
           {submitting ? 'Creating…' : 'Create Group'}
         </button>
       </form>
-    </div>
+    </main>
   );
 }

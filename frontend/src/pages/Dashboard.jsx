@@ -21,24 +21,25 @@ export default function Dashboard() {
   if (!group) return <p className="p-6 text-slate-500">Loading…</p>;
 
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-8">
+    <main className="min-h-[100dvh] px-6 py-8 text-[#17352f]">
       <div className="mx-auto max-w-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <Link to="/" className="text-sm font-semibold text-[#668078] hover:text-[#dd783a]">← QuickSplit</Link>
+        <p className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-[#dd783a]">
           {group.name}
         </p>
-        <p className="text-3xl font-bold text-slate-900">₹{group.total.toLocaleString('en-IN')} Total</p>
+        <p className="mt-2 text-4xl font-bold tracking-[-0.06em]">₹{group.total.toLocaleString('en-IN')} <span className="text-xl font-semibold text-[#668078]">total</span></p>
 
         <div className="mt-2 flex gap-6 text-sm text-slate-600">
-          <span>Expenses {group.expenses.length}</span>
-          <span>People {group.people.length}</span>
+          <span>{group.expenses.length} expenses</span>
+          <span>{group.people.length} people</span>
         </div>
 
-        <ul className="mt-6 divide-y divide-slate-200 rounded-xl bg-white shadow-sm">
+        <ul className="mt-7 divide-y divide-[#dbe5d7] rounded-2xl border border-[#dbe5d7] bg-[#f8f8ef]/80 shadow-[0_16px_40px_rgba(57,91,65,0.08)]">
           {group.people.map((person) => {
             const balance = group.balances[person] ?? 0;
             return (
               <li key={person} className="flex items-center justify-between px-4 py-3">
-                <span className="font-medium text-slate-800">{person}</span>
+                <span className="font-semibold text-[#31564d]">{person}</span>
                 <span className={balance >= 0 ? 'text-emerald-600' : 'text-red-600'}>
                   {balance >= 0 ? '+' : '-'}₹{Math.abs(balance).toLocaleString('en-IN')}
                 </span>
@@ -49,14 +50,14 @@ export default function Dashboard() {
 
         <button
           onClick={() => setShowForm(true)}
-          className="mt-4 w-full rounded-lg bg-slate-900 py-3 font-semibold text-white"
+          className="mt-4 w-full rounded-xl bg-[#17352f] py-3.5 font-semibold text-[#f8f8ef] shadow-[0_12px_24px_rgba(23,53,47,0.14)] hover:bg-[#214d43]"
         >
           + Add Expense
         </button>
 
         <Link
           to={`/group/${groupId}/settlement`}
-          className="mt-3 block w-full rounded-lg bg-emerald-600 py-3 text-center font-semibold text-white hover:bg-emerald-700"
+          className="mt-3 block w-full rounded-xl border border-[#cbd8c9] bg-[#f8f8ef] py-3.5 text-center font-semibold text-[#31564d] hover:border-[#dd783a] hover:text-[#dd783a]"
         >
           View Settlement
         </Link>
@@ -72,6 +73,6 @@ export default function Dashboard() {
           }}
         />
       )}
-    </div>
+    </main>
   );
 }

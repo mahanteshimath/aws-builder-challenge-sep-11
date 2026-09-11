@@ -1,1 +1,56 @@
 @import "tailwindcss";
+
+:root {
+	font-family: "Avenir Next", "Segoe UI", sans-serif;
+	color: #17352f;
+	background: #f5f7f1;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	min-width: 320px;
+	margin: 0;
+	background:
+		radial-gradient(circle at 12% 10%, rgba(226, 242, 197, 0.75), transparent 28rem),
+		radial-gradient(circle at 92% 84%, rgba(255, 226, 172, 0.42), transparent 24rem),
+		#f5f7f1;
+}
+
+button,
+a,
+input {
+	transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease,
+		box-shadow 180ms ease, transform 180ms ease;
+}
+
+button:active,
+a:active {
+	transform: translateY(1px);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+	outline: 3px solid rgba(218, 119, 54, 0.38);
+	outline-offset: 3px;
+}
+
+::selection {
+	color: #fffdf8;
+	background: #dd783a;
+}
+
+@keyframes fade-in {
+	from { opacity: 0; transform: translateY(12px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lift-in {
+	from { opacity: 0; transform: translateY(20px) rotate(2deg); }
+	to { opacity: 1; transform: translateY(0) rotate(2deg); }
+}
