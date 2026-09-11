@@ -83,6 +83,27 @@ Resources:
             Path: /groups/{groupId}/expenses
             Method: POST
 
+  SummarizeGroupFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: handlers/summarizeGroup.handler
+      Timeout: 15
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref QuickSplitTable
+        - Statement:
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.nova-lite-v1:0"
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref QuickSplitApi
+            Path: /groups/{groupId}/summary
+            Method: POST
+
 Outputs:
   ApiUrl:
     Description: Base URL of the QuickSplit API

@@ -1,18 +1,32 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getGroup } from '../lib/api';
+import { getGroup, summarizeGroup } from '../lib/api';
 
 export default function Settlement() {
   const { groupId } = useParams();
   const [group, setGroup] = useState(null);
   const [error, setError] = useState('');
   const [settled, setSettled] = useState(false);
+  const [summary, setSummary] = useState('');
+  const [summaryLoading, setSummaryLoading] = useState(false);
 
   useEffect(() => {
     getGroup(groupId)
       .then(setGroup)
       .catch((err) => setError(err.message));
   }, [groupId]);
+
+  const handleGenerateSummary = async () => {
+    setSummaryLoading(true);
+    try {
+      const result = await summarizeGroup(groupId);
+      setSummary(result.summary || "Couldn't generate a summary right now.");
+    } catch {
+      setSummary("Couldn't generate a summary right now.");
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
 
   if (error) return <p className="p-6 text-red-600">{error}</p>;
   if (!group) return <p className="p-6 text-slate-500">Loading…</p>;
@@ -56,6 +70,19 @@ export default function Settlement() {
         >
           {settled ? 'Settled ✅' : 'Mark as Settled'}
         </button>
+
+        <button
+          onClick={handleGenerateSummary}
+          disabled={summaryLoading}
+          className="mt-3 w-full rounded-lg border border-slate-300 bg-white py-3 font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+        >
+          {summaryLoading ? 'Thinking…' : '✨ Generate Fun Summary (AI)'}
+        </button>
+        {summary && (
+          <p className="mt-3 rounded-lg bg-amber-50 px-4 py-3 text-sm italic text-amber-900">
+            {summary}
+          </p>
+        )}
       </div>
     </div>
   );

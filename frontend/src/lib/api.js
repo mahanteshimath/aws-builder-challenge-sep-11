@@ -17,3 +17,6 @@ export const getGroup = (groupId) => request(`/groups/${groupId}`);
 
 export const addExpense = (groupId, expense) =>
   request(`/groups/${groupId}/expenses`, { method: 'POST', body: JSON.stringify(expense) });
+
+export const summarizeGroup = (groupId) =>
+  request(`/groups/${groupId}/summary`, { method: 'POST' });

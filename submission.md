@@ -17,6 +17,8 @@ From there the flow is:
 
 That last step is QuickSplit's actual differentiator, and it's the reason I built this instead of just cloning an existing splitter. A naive expense app shows you every individual debt: "Rahul owes Monty ₹500," "Amit owes Priya ₹700," and so on, which for a group of five people can produce ten or more redundant transactions. QuickSplit instead computes **net balances** per person and runs a debt-simplification algorithm that finds the *minimum number of payments* needed to settle the entire group. In the Goa Trip example bundled with the app, four friends with wildly uneven expenses collapse down to exactly three payments, all flowing toward whoever fronted the most money. "Settled in 3 payments ✅" is a genuinely satisfying thing to see after a chaotic trip.
 
+On top of that, the Settlement screen has a small "✨ Generate Fun Summary (AI)" button that calls **Amazon Nova Lite** through Amazon Bedrock's Converse API to write a one-line, witty recap of who ended up as everyone's bank for the trip. It's optional and deliberately low-stakes — the actual settlement math never depends on the model — but it turns a spreadsheet-style result into something people actually want to screenshot and share in the group chat.
+
 ## How I Built It
 
 I started from the outcome, not the stack. The one sentence I wanted to be true by the end was: "Tell me who owes whom, and how much, with the fewest payments." Everything else — the UI, the API shape, the data model — got designed backward from that.
@@ -45,18 +47,19 @@ The last snag was Git. The frontend repo I'm working in is a shared classroom re
                      │
                      ▼
              AWS Lambda (Node.js 20.x)
-        createGroup · addExpense · getGroup
-                     │
-                     ▼
-              Amazon DynamoDB
-        (single table: GROUP#id / METADATA
-                    + EXPENSE#id items)
+   createGroup · addExpense · getGroup · summarizeGroup
+                     │              │
+                     ▼              ▼
+              Amazon DynamoDB   Amazon Bedrock
+        (single table: GROUP#id  (Amazon Nova Lite —
+         METADATA + EXPENSE#id)   fun AI trip recap)
 ```
 
 - **AWS Amplify Hosting** serves the static React build over CloudFront-backed hosting, deployed via a manual zip upload rather than a Git integration.
 - **Amazon API Gateway (HTTP API)** exposes three routes — `POST /groups`, `POST /groups/{groupId}/expenses`, and `GET /groups/{groupId}` — with CORS enabled for the Amplify origin.
 - **AWS Lambda** runs three small Node.js functions that validate input, write to DynamoDB, and (for `getGroup`) run the settlement algorithm on the way out.
 - **Amazon DynamoDB** stores everything in one on-demand table using a single-table design: a group's metadata and all of its expenses share a partition key (`GROUP#<id>`), differentiated by sort key (`METADATA` vs `EXPENSE#<id>`), so fetching a whole group is a single `Query`.
+- **Amazon Bedrock (Amazon Nova Lite)** powers the optional "Generate Fun Summary" button — a `summarizeGroup` Lambda calls the Converse API with the group's balances and settlement plan and gets back a one-line, human-friendly recap, scoped via IAM to just that one model ARN.
 - No authentication service (Cognito) is used by design — the unguessable, randomly generated group ID in the URL is the access control for this MVP, matching the "no account required for the demo" philosophy.
 
 ## What I Learned
