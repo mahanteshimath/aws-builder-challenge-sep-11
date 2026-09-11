@@ -1,0 +1,8 @@
+{
+  "name": "quicksplit-backend",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "test": "node --test src/lib/*.test.js"
+  }
+}

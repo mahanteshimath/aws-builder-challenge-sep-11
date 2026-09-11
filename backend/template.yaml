@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: QuickSplit — split expenses, settle in the fewest payments (Amplify + API Gateway + Lambda + DynamoDB)
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 10
+    MemorySize: 256
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref QuickSplitTable
+
+Resources:
+  QuickSplitTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+
+  QuickSplitApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: ["*"]
+        AllowMethods: ["GET", "POST", "OPTIONS"]
+        AllowHeaders: ["content-type"]
+
+  CreateGroupFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: handlers/createGroup.handler
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref QuickSplitTable
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref QuickSplitApi
+            Path: /groups
+            Method: POST
+
+  GetGroupFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: handlers/getGroup.handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref QuickSplitTable
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref QuickSplitApi
+            Path: /groups/{groupId}
+            Method: GET
+
+  AddExpenseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: handlers/addExpense.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref QuickSplitTable
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref QuickSplitApi
+            Path: /groups/{groupId}/expenses
+            Method: POST
+
+Outputs:
+  ApiUrl:
+    Description: Base URL of the QuickSplit API
+    Value: !Sub "https://${QuickSplitApi}.execute-api.${AWS::Region}.amazonaws.com"
+  TableName:
+    Value: !Ref QuickSplitTable
